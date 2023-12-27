@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <sstream>
+#include <cmath>
 
 //////////////////////////////////////////////////////////////////////////////
 // Simple Implementation of InvertedIndex Data Structure
@@ -26,7 +27,7 @@ class InvertedIndex {
     InvertedIndex();
 
     // Build inverted_lists and records from file.
-    void build_from_file(std::string file);
+    void build_from_file(std::string file, float b, float k);
 
     // Find words from line.
     std::vector<std::string> get_words(std::string query);
@@ -51,7 +52,7 @@ class InvertedIndex {
     // The result should be a vector of integers representing the document IDs.
     std::vector<int> process_query(std::vector<std::string>);
 
-    bool check_if_docid_in_vec(int document_id, std::string word);
+    std::tuple<bool, int> check_if_docid_in_vec(int document_id, std::string word);
 
 };
 #endif // INVERTED_INDEX_H

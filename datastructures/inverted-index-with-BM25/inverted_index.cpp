@@ -5,7 +5,7 @@ InvertedIndex::InvertedIndex() {
   records = {};  
 }
 
-void InvertedIndex::build_from_file(std::string file) {
+void InvertedIndex::build_from_file(std::string file, float b, float k) {
   // Open the file for reading.
   std::ifstream inputFile(file);
 
@@ -19,8 +19,11 @@ void InvertedIndex::build_from_file(std::string file) {
   int document_id = 0; 
 
   // Document length.
-  int DL = 0;
+  float DL = 0.0;
 
+  // The number of times a word occurs in a document (term frequency tf)
+  std::map<std::string, int> word_count = {};
+  
   std::string line;
   while (std::getline(inputFile, line)) {
     document_id += 1;
@@ -30,9 +33,6 @@ void InvertedIndex::build_from_file(std::string file) {
     std::string title = split_line[0];
     std::string description = split_line[1];
     records.push_back(std::make_tuple(title, description));
-    
-    // The number of times a word occurs in a document (term frequency tf)
-    std::map<std::string, int> word_count = {};
 
     // Cache words of the Document.
     line = strip(line);
@@ -42,7 +42,7 @@ void InvertedIndex::build_from_file(std::string file) {
       auto& current_word = words[i];
 
       // Count words.
-      DL += 1;
+      DL += 1.0;
      
       // Calculate term frequency (tf)
       if (word_count.find(current_word) == word_count.end()) {
@@ -58,16 +58,17 @@ void InvertedIndex::build_from_file(std::string file) {
         // Check if document_id is present as the first element of tuple in the vector
         std::vector<std::tuple<int, float>> vec = inverted_lists[current_word]; 
         
-        // NEED TO IMPROVE
+        // NEED TO IMPROVE!
         // BAD APPROACH!
-        bool found = check_if_docid_in_vec(document_id, current_word); 
-        if (found) {
+        std::tuple<bool, int> found = check_if_docid_in_vec(document_id, current_word); 
+        if (std::get<0>(found)) {
           // Update term frequency
-          inverted_lists[current_word][document_id-1] = std::make_tuple(document_id, word_count[current_word]);
+          int j = std::get<1>(found);
+          inverted_lists[current_word][j] = std::make_tuple(document_id, word_count[current_word]);
         }
         else {
           // Push new tuple
-          inverted_lists[current_word].push_back(std::make_tuple(document_id, word_count[current_word]));
+          inverted_lists[current_word].emplace_back(std::make_tuple(document_id, word_count[current_word]));
         }
       }
       else {
@@ -75,14 +76,38 @@ void InvertedIndex::build_from_file(std::string file) {
         inverted_lists[current_word] = {std::make_tuple(document_id, word_count[current_word])};
       }
     }
-    
-    // Implementation of BM25 algorithm.
-
-
-
+    word_count.clear();
   }
   inputFile.close();
-  return;
+  
+  // Implementation of BM25 algorithm.
+  // BM25 = tf * (k+1) / (k * (1 - b + b * DL/AVDL) + tf) * log2(N/df)
+  // N: total number of Documents.
+  // AVDL: average document length.
+  // tf: term frequency.
+  // df: document frequency.
+  
+  float N = document_id;  
+  float AVDL = DL / N;
+  float BM25_score;
+  for (auto it = inverted_lists.begin(); it != inverted_lists.end(); ++it) {
+    std::vector<std::tuple<int, float>>& val = it->second; 
+    const auto& key = it->first;
+    
+    for (int i = 0; i < val.size(); i++) {
+      float df = val.size(); 
+      float document_id = std::get<0>(val[i]); 
+      float tf = std::get<1>(val[i]); 
+      
+      if (std::isinf(k)) {
+        BM25_score = tf * log2(N/df);
+      }
+      else { 
+        BM25_score = (tf * (k+1.0) / (k * (1.0 - b + b * DL/AVDL) + tf)) * log2(N/df);
+      } 
+      val[i] = std::make_tuple(document_id, BM25_score); 
+    } 
+  }
 }
 
 std::vector<std::string> InvertedIndex::get_words(std::string query) {
@@ -204,13 +229,13 @@ std::vector<int> InvertedIndex::process_query(std::vector<std::string> keywords)
   return {};
 }
 
-bool InvertedIndex::check_if_docid_in_vec(int document_id, std::string word) {
+std::tuple<bool, int> InvertedIndex::check_if_docid_in_vec(int document_id, std::string word) {
   std::vector<std::tuple<int, float>> vec = inverted_lists[word]; 
   for (int i = 0; i < vec.size(); i++) {
     if (std::get<0>(vec[i]) == document_id) {
-      return true;
+      return std::make_tuple(true, i);
     }
   }
-  return false;
+  return std::make_tuple(false, -1);
 }
 
