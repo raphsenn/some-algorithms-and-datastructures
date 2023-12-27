@@ -33,6 +33,18 @@ TEST(inverted_index, build_from_file_3) {
   "romantic: [(2, 2.584963)], science: [(3, 2.584963)], thriller: [(3, 2.584963)]}");
 }
 
+//////////////////////////////////////////////////////////////////////////////
+// Test: build_from_file
+//////////////////////////////////////////////////////////////////////////////
+
+TEST(inverted_index, merge_1) {
+  InvertedIndex inverted_index;
+  std::vector<std::tuple<int, float>> list_1 = {{1, 2.1}, {5, 3.2}};
+  std::vector<std::tuple<int, float>> list_2 = {{1, 1.7}, {2, 1.3}, {6, 3.3}};
+  std::vector<std::tuple<int, float>> list_result = {{1, 3.8}, {2, 1.3}, {5, 3.2}, {6, 3.3}};
+  EXPECT_EQ(inverted_index.merge(list_1, list_2), list_result); 
+}
+
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

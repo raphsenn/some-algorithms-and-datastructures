@@ -20,6 +20,7 @@ void InvertedIndex::build_from_file(std::string file, float b, float k) {
 
   // Document length.
   float DL = 0.0;
+  float N = 0.0;
 
   // The number of times a word occurs in a document (term frequency tf)
   std::map<std::string, int> word_count = {};
@@ -27,12 +28,13 @@ void InvertedIndex::build_from_file(std::string file, float b, float k) {
   std::string line;
   while (std::getline(inputFile, line)) {
     document_id += 1;
+    N += 1.0;
     
     // Cache title and description of the Document.
-    std::vector<std::string> split_line = split(line, '\t'); 
-    std::string title = split_line[0];
-    std::string description = split_line[1];
-    records.push_back(std::make_tuple(title, description));
+    //std::vector<std::string> split_line = split(line, '\t'); 
+    //std::string title = split_line[0];
+    //std::string description = split_line[1];
+    //records.emplace_back(std::make_tuple(title, description));
 
     // Cache words of the Document.
     line = strip(line);
@@ -55,20 +57,17 @@ void InvertedIndex::build_from_file(std::string file, float b, float k) {
       if (it != inverted_lists.end()) {
         // Key is found
         
-        // Check if document_id is present as the first element of tuple in the vector
-        std::vector<std::tuple<int, float>> vec = inverted_lists[current_word]; 
+        auto& vec = inverted_lists[current_word];
+        auto it = std::find_if(vec.begin(), vec.end(), [document_id](const auto& tuple) {return std::get<0>(tuple) == document_id;});
         
-        // NEED TO IMPROVE!
-        // BAD APPROACH!
-        std::tuple<bool, int> found = check_if_docid_in_vec(document_id, current_word); 
-        if (std::get<0>(found)) {
+        if (it != vec.end()) {
           // Update term frequency
-          int j = std::get<1>(found);
-          inverted_lists[current_word][j] = std::make_tuple(document_id, word_count[current_word]);
+          int j = std::distance(vec.begin(), it);
+          vec[j] = std::make_tuple(document_id, word_count[current_word]);
         }
         else {
           // Push new tuple
-          inverted_lists[current_word].emplace_back(std::make_tuple(document_id, word_count[current_word]));
+          vec.emplace_back(document_id, word_count[current_word]);
         }
       }
       else {
@@ -79,35 +78,7 @@ void InvertedIndex::build_from_file(std::string file, float b, float k) {
     word_count.clear();
   }
   inputFile.close();
-  
-  // Implementation of BM25 algorithm.
-  // BM25 = tf * (k+1) / (k * (1 - b + b * DL/AVDL) + tf) * log2(N/df)
-  // N: total number of Documents.
-  // AVDL: average document length.
-  // tf: term frequency.
-  // df: document frequency.
-  
-  float N = document_id;  
-  float AVDL = DL / N;
-  float BM25_score;
-  for (auto it = inverted_lists.begin(); it != inverted_lists.end(); ++it) {
-    std::vector<std::tuple<int, float>>& val = it->second; 
-    const auto& key = it->first;
-    
-    for (int i = 0; i < val.size(); i++) {
-      float df = val.size(); 
-      float document_id = std::get<0>(val[i]); 
-      float tf = std::get<1>(val[i]); 
-      
-      if (std::isinf(k)) {
-        BM25_score = tf * log2(N/df);
-      }
-      else { 
-        BM25_score = (tf * (k+1.0) / (k * (1.0 - b + b * DL/AVDL) + tf)) * log2(N/df);
-      } 
-      val[i] = std::make_tuple(document_id, BM25_score); 
-    } 
-  }
+  BM25(N, DL, b, k);  
 }
 
 std::vector<std::string> InvertedIndex::get_words(std::string query) {
@@ -190,29 +161,42 @@ std::vector<std::string> InvertedIndex::split(std::string& line, char delimiter)
   std::vector<std::string> tokens;
   std::istringstream stream(line);
   std::string token;
-
   while (std::getline(stream, token, delimiter)) {
       tokens.push_back(token);
   }
-
   return tokens;
 }
 
-std::vector<int> InvertedIndex::intersect(std::vector<int> list_1, std::vector<int> list_2) {
-  std::vector<int> matches;
+std::vector<std::tuple<int, float>> InvertedIndex::merge(std::vector<std::tuple<int, float>> list_1, std::vector<std::tuple<int, float>> list_2) {
+  std::vector<std::tuple<int, float>> matches;
   
   int i = 0; // Pointer to list_1
   int j = 0; // pointer to list_2
   
   while (i < list_1.size() && j < list_2.size()) {
-    if (list_1[i] == list_2[j]) {
-      matches.push_back(list_1[i]);
-    } 
-    if (list_1[i] < list_2[j]) {
-      i += 1;
+    if (std::get<0>(list_1[i]) < std::get<0>(list_2[j])) { 
+      matches.emplace_back(std::make_tuple(std::get<0>(list_1[i]), std::get<1>(list_1[i])));
+      i += 1;    
+    }
+    else if (std::get<0>(list_1[i]) > std::get<0>(list_2[j])) {
+      matches.emplace_back(std::make_tuple(std::get<0>(list_2[j]), std::get<1>(list_2[j])));
+      j += 1; 
     }
     else {
+      matches.emplace_back(std::make_tuple(std::get<0>(list_1[i]), std::get<1>(list_1[i]) + std::get<1>(list_2[j])));
+      i += 1;
       j += 1;
+    }
+  }  
+  if (i < list_1.size()) {
+    for (int x = i; x < list_1.size(); x++) {
+      matches.emplace_back(list_1[x]);
+    }
+  }
+  
+  if (j < list_2.size()) {
+    for (int x = j; x < list_2.size(); x++) {
+      matches.emplace_back(list_2[x]);
     }
   }
   return matches;
@@ -229,13 +213,36 @@ std::vector<int> InvertedIndex::process_query(std::vector<std::string> keywords)
   return {};
 }
 
-std::tuple<bool, int> InvertedIndex::check_if_docid_in_vec(int document_id, std::string word) {
-  std::vector<std::tuple<int, float>> vec = inverted_lists[word]; 
-  for (int i = 0; i < vec.size(); i++) {
-    if (std::get<0>(vec[i]) == document_id) {
-      return std::make_tuple(true, i);
-    }
-  }
-  return std::make_tuple(false, -1);
+void InvertedIndex::BM25(float N, float DL, float b, float k) {
+  // BM25 = tf * (k+1) / (k * (1 - b + b * DL/AVDL) + tf) * log2(N/df)
+  // N: total number of Documents.
+  // AVDL: average document length.
+  // tf: term frequency.
+  // df: document frequency.
+  
+  float AVDL = DL / N;
+  float BM25_score;
+  for (auto it = inverted_lists.begin(); it != inverted_lists.end(); ++it) {
+    std::vector<std::tuple<int, float>>& val = it->second; 
+    const auto& key = it->first;
+    
+    for (int i = 0; i < val.size(); i++) {
+      float df = val.size(); 
+      float document_id = std::get<0>(val[i]); 
+      float tf = std::get<1>(val[i]); 
+      
+      if (std::isinf(k)) {
+        BM25_score = tf * log2(N/df);
+      }
+      else { 
+        BM25_score = (tf * (k+1.0) / (k * (1.0 - b + b * DL/AVDL) + tf)) * log2(N/df);
+      } 
+      val[i] = std::make_tuple(document_id, BM25_score); 
+    } 
+  } 
 }
+
+
+
+
 

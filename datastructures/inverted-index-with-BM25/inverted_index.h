@@ -43,16 +43,18 @@ class InvertedIndex {
 
     // Python like split method.
     std::vector<std::string> split(std::string& line, char delimiter);
-
-    // Computes the intersection of the two given inverted lists in O(n),
+    
+    // Compute the union of the two given inverted lists
     // whre n is the number of Elements in both lists. 
-    std::vector<int> intersect(std::vector<int> list_1, std::vector<int> list_2);
+    std::vector<std::tuple<int, float>> merge(std::vector<std::tuple<int, float>> list_1, std::vector<std::tuple<int, float>> list_2);
 
     // Implement your logic to fetch and compute the intersection of inverted lists here.
     // The result should be a vector of integers representing the document IDs.
     std::vector<int> process_query(std::vector<std::string>);
-
-    std::tuple<bool, int> check_if_docid_in_vec(int document_id, std::string word);
+    
+    // Unefficient implementation of BM25 Algorithm.
+    void BM25(float N, float DL, float b, float k);
+    
 
 };
 #endif // INVERTED_INDEX_H
