@@ -20,11 +20,17 @@ void InvertedIndex::build_from_file(std::string file) {
   while (std::getline(inputFile, line)) {
     document_id += 1;
     
+    // Cache title and description of the Document.
+    std::vector<std::string> split_line = split(line, '\t'); 
+    std::string title = split_line[0];
+    std::string description = split_line[1];
+    records.push_back(std::make_tuple(title, description));
+
     line = strip(line);
     std::vector<std::string> words = get_words(line);
      
     for (int i = 0; i < words.size(); i++) {
-      auto& current_word = words[i]; 
+      auto& current_word = words[i];
       if (inverted_lists.find(current_word) == inverted_lists.end()) {
         inverted_lists[current_word] = {document_id};
       }
@@ -36,8 +42,8 @@ void InvertedIndex::build_from_file(std::string file) {
       else {
         inverted_lists[current_word].push_back(document_id);
       }
+      
     }
-
   }
   inputFile.close();
   return;
@@ -76,7 +82,6 @@ std::string InvertedIndex::strip(std::string str) {
   return str.substr(start, end - start + 1);
 }
 
-
 std::string InvertedIndex::inverted_lists_to_string() {
   std::string il_as_string = "{"; 
   for (auto it = inverted_lists.begin(); it != inverted_lists.end(); ++it) {
@@ -104,6 +109,33 @@ std::string InvertedIndex::inverted_lists_to_string() {
   return il_as_string;
 }
 
+std::string InvertedIndex::records_to_string() {
+  std::string records_as_string = "{";
+  
+  for (int i = 0; i < records.size(); i++) {
+    std::string title = std::get<0>(records[i]);
+    std::string description = std::get<1>(records[i]);
+    
+    records_as_string += "(" + title + ", " + description + ")";
+  
+    if (i < records.size() - 1) {
+      records_as_string += ", ";
+    }
+  }
+  records_as_string += "}";
+  return records_as_string;
+}
 
+std::vector<std::string> InvertedIndex::split(std::string& line, char delimiter) {
+  std::vector<std::string> tokens;
+  std::istringstream stream(line);
+  std::string token;
+
+  while (std::getline(stream, token, delimiter)) {
+      tokens.push_back(token);
+  }
+
+  return tokens;
+}
 
 

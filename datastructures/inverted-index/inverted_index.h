@@ -6,7 +6,7 @@
 #include <regex>
 #include <algorithm>
 #include <cstdio>
-
+#include <sstream>
 
 //////////////////////////////////////////////////////////////////////////////
 // Simple Implementation of InvertedIndex Datastructure
@@ -26,10 +26,18 @@ class InvertedIndex {
 
     // Get words from every line in file.
     std::vector<std::string> get_words(std::string query);
-
+    
+    // Convert inverted_lists to string.
     std::string inverted_lists_to_string();
 
+    // Convert records to string.
+    std::string records_to_string();
+    
+    // Like strip from python.
     std::string strip(std::string str); 
+
+    // Like split form python.
+    std::vector<std::string> split(std::string& line, char delimiter);
 
 
 };
