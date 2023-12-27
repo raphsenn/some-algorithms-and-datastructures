@@ -14,9 +14,14 @@ void InvertedIndex::build_from_file(std::string file) {
     printf("Error opening the file.\n");
     return; 
   }
-  
-  std::string line;
+ 
+  // Document id.
   int document_id = 0; 
+
+  // Document length.
+  int DL = 0;
+
+  std::string line;
   while (std::getline(inputFile, line)) {
     document_id += 1;
     
@@ -25,25 +30,56 @@ void InvertedIndex::build_from_file(std::string file) {
     std::string title = split_line[0];
     std::string description = split_line[1];
     records.push_back(std::make_tuple(title, description));
+    
+    // The number of times a word occurs in a document (term frequency tf)
+    std::map<std::string, int> word_count = {};
 
+    // Cache words of the Document.
     line = strip(line);
     std::vector<std::string> words = get_words(line);
-     
+    
     for (int i = 0; i < words.size(); i++) {
       auto& current_word = words[i];
-      if (inverted_lists.find(current_word) == inverted_lists.end()) {
-        inverted_lists[current_word] = {document_id};
+
+      // Count words.
+      DL += 1;
+     
+      // Calculate term frequency (tf)
+      if (word_count.find(current_word) == word_count.end()) {
+        word_count[current_word] = 0;
       }
-      // Check if document_id is in inverted_lists[current_word]
-      if (std::find(inverted_lists[current_word].begin(), inverted_lists[current_word].end(), document_id) != inverted_lists[current_word].end()) {
-        ; 
+      word_count[current_word] += 1;
+     
+      // Check if a current_word is present in inverted_lists using find.
+      auto it = inverted_lists.find(current_word);
+      if (it != inverted_lists.end()) {
+        // Key is found
+        
+        // Check if document_id is present as the first element of tuple in the vector
+        std::vector<std::tuple<int, float>> vec = inverted_lists[current_word]; 
+        
+        // NEED TO IMPROVE
+        // BAD APPROACH!
+        bool found = check_if_docid_in_vec(document_id, current_word); 
+        if (found) {
+          // Update term frequency
+          inverted_lists[current_word][document_id-1] = std::make_tuple(document_id, word_count[current_word]);
+        }
+        else {
+          // Push new tuple
+          inverted_lists[current_word].push_back(std::make_tuple(document_id, word_count[current_word]));
+        }
       }
-      // If not, push it.
       else {
-        inverted_lists[current_word].push_back(document_id);
+        // current_word is not found
+        inverted_lists[current_word] = {std::make_tuple(document_id, word_count[current_word])};
       }
-      
     }
+    
+    // Implementation of BM25 algorithm.
+
+
+
   }
   inputFile.close();
   return;
@@ -91,7 +127,7 @@ std::string InvertedIndex::inverted_lists_to_string() {
     il_as_string += key + ": [";
 
     for (int i = 0; i < val.size(); i++) {
-      il_as_string += std::to_string(val[i]);
+      il_as_string += "(" + std::to_string(std::get<0>(val[i])) + ", " + std::to_string(std::get<1>(val[i])) + ")";
       
       if (i < val.size() - 1) { 
         il_as_string += ", "; 
@@ -161,9 +197,20 @@ std::vector<int> InvertedIndex::process_query(std::vector<std::string> keywords)
   if (keywords.empty()) {
     return {};
   } 
-  std::vector<int> matches = inverted_lists[keywords[0]];
-  for (int i = 1; i < keywords.size(); i++) {
-    matches = intersect(matches, inverted_lists[keywords[i]]);    
-  }
-  return matches;
+  //std::vector<int> matches = inverted_lists[keywords[0]];
+  //for (int i = 1; i < keywords.size(); i++) {
+  //  matches = intersect(matches, inverted_lists[keywords[i]]);    
+  //}
+  return {};
 }
+
+bool InvertedIndex::check_if_docid_in_vec(int document_id, std::string word) {
+  std::vector<std::tuple<int, float>> vec = inverted_lists[word]; 
+  for (int i = 0; i < vec.size(); i++) {
+    if (std::get<0>(vec[i]) == document_id) {
+      return true;
+    }
+  }
+  return false;
+}
+

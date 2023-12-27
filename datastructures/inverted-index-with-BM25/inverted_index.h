@@ -16,7 +16,7 @@
 class InvertedIndex {
   private:
     // Map to store inverted lists for each unique word.
-    std::map<std::string, std::vector<int>> inverted_lists;
+    std::map<std::string, std::vector<std::tuple<int, float>>> inverted_lists;
     
     // Vector to store document records as tuples (title, description). 
     std::vector<std::tuple<std::string, std::string>> records;
@@ -50,5 +50,8 @@ class InvertedIndex {
     // Implement your logic to fetch and compute the intersection of inverted lists here.
     // The result should be a vector of integers representing the document IDs.
     std::vector<int> process_query(std::vector<std::string>);
+
+    bool check_if_docid_in_vec(int document_id, std::string word);
+
 };
 #endif // INVERTED_INDEX_H
