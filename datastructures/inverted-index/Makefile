@@ -1,24 +1,39 @@
+CC := g++
+CFLAGS := -std=c++17 -Wall
+INCLUDE := -Iinclude
+LIBS := -lgtest -lgtest_main -lpthread
 
-all: compile test linktest
+SRC_DIR := src
+TESTS_DIR := tests
+BUILD_DIR := build
 
-compile: inverted_index.o main.o link
+APP_SRC_FILES := $(wildcard $(SRC_DIR)/*.cpp)
+TEST_SRC_FILES := $(wildcard $(TESTS_DIR)/*.cpp)
 
-main.o: main.cpp
-	g++ -c -std=c++17 main.cpp
+APP_OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(APP_SRC_FILES))
+TEST_OBJ_FILES := $(patsubst $(TESTS_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(TEST_SRC_FILES))
 
-inverted_index.o: inverted_index.cpp
-	g++ -c -std=c++17 inverted_index.cpp
+TEST_EXEC := test
 
-test: test_inverted_index.cpp
-	g++ -c -std=c++17 test_inverted_index.cpp
+all: $(TEST_EXEC)
 
-link:
-	g++ -o main main.o inverted_index.o
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(@D)
+	$(CC) -c $(CFLAGS) $(INCLUDE) $< -o $@
 
-linktest:
-	g++ -o test inverted_index.o test_inverted_index.o -lgtest -lgtest_main -lpthread
+$(BUILD_DIR)/%.o: $(TESTS_DIR)/%.cpp
+	@mkdir -p $(@D)
+	$(CC) -c $(CFLAGS) $(INCLUDE) $< -o $@
+
+$(TEST_EXEC): $(TEST_OBJ_FILES) $(BUILD_DIR)/inverted_index.o
+	$(CC) $^ -o $@ $(LIBS)
+
+$(BUILD_DIR)/inverted_index.o: $(SRC_DIR)/inverted_index.cpp
+	@mkdir -p $(@D)
+	$(CC) -c $(CFLAGS) $(INCLUDE) $< -o $@
 
 clean:
-	rm -f *.o
-	rm -f main
+	rm -rf $(BUILD_DIR)
 	rm -f test
+run_tests: $(TEST_EXEC)
+	cd .. && ./test

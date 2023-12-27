@@ -97,7 +97,6 @@ std::string InvertedIndex::inverted_lists_to_string() {
         il_as_string += ", "; 
       }
     }
-    
     if (std::next(it) != inverted_lists.end()) {
       il_as_string += "], ";
     }
@@ -138,4 +137,33 @@ std::vector<std::string> InvertedIndex::split(std::string& line, char delimiter)
   return tokens;
 }
 
+std::vector<int> InvertedIndex::intersect(std::vector<int> list_1, std::vector<int> list_2) {
+  std::vector<int> matches;
+  
+  int i = 0; // Pointer to list_1
+  int j = 0; // pointer to list_2
+  
+  while (i < list_1.size() && j < list_2.size()) {
+    if (list_1[i] == list_2[j]) {
+      matches.push_back(list_1[i]);
+    } 
+    if (list_1[i] < list_2[j]) {
+      i += 1;
+    }
+    else {
+      j += 1;
+    }
+  }
+  return matches;
+}
 
+std::vector<int> InvertedIndex::process_query(std::vector<std::string> keywords) {
+  if (keywords.empty()) {
+    return {};
+  } 
+  std::vector<int> matches = inverted_lists[keywords[0]];
+  for (int i = 1; i < keywords.size(); i++) {
+    matches = intersect(matches, inverted_lists[keywords[i]]);    
+  }
+  return matches;
+}
