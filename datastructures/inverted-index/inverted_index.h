@@ -27,6 +27,11 @@ class InvertedIndex {
     // Get words from every line in file.
     std::vector<std::string> get_words(std::string query);
 
+    std::string inverted_lists_to_string();
+
+    std::string strip(std::string str); 
+
+
 };
 
 

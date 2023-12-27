@@ -4,10 +4,10 @@ compile: inverted_index.o main.o link
 
 
 main.o: main.cpp
-	g++ -c -std=c++11 main.cpp
+	g++ -c -std=c++17 main.cpp
 
 inverted_index.o: inverted_index.cpp
-	g++ -c -std=c++11 inverted_index.cpp
+	g++ -c -std=c++17 inverted_index.cpp
 
 
 link:
