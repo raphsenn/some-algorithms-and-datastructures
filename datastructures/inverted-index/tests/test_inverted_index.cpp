@@ -1,13 +1,39 @@
 #include <gtest/gtest.h>
 #include "./inverted_index.h"
 
+/**
+ * @brief Unit tests for the InvertedIndex class.
+ */
+ 
+//////////////////////////////////////////////////////////////////////////////
+// How to compile the test:
+//
+// To run the tests, Google Test (gtest) needs to be installed.
+//
+// Compilation instructions:
+// 1. Navigate to the 'inverted-index' folder.
+// 2. Execute the following commands in the terminal:
+
+// Compile InvertedIndex implementation file
+// g++ -c -std=c++17 src/inverted_index.cpp -Iinclude
+
+// Compile the test file
+// g++ -c -std=c++17 tests/test_inverted_index.cpp -Iinclude
+
+// Link object files and Google Test libraries
+// g++ -o test -std=c++17 inverted_index.o test_inverted_index.o -lgtest -lgtest_main -lpthread
+
+// Run the compiled test executable
+// ./test
+
+
 //////////////////////////////////////////////////////////////////////////////
 // Test: build_from_file
 //////////////////////////////////////////////////////////////////////////////
 
 TEST(test_inverted_index, build_from_file) {
   InvertedIndex inverted_index;
-  inverted_index.build_from_file("example.tsv");
+  inverted_index.build_from_file("testdata/test_data.tsv");
   EXPECT_EQ(inverted_index.inverted_lists_to_string(), "{a: [1, 2], bad: [2, 4], doc: [1, 2, 3, 4, 5], film: [2, 5], movie: [1, 3, 4], nice: [1, 3, 5], pretty: [3, 4], really: [5]}");
   EXPECT_EQ(inverted_index.records_to_string(), "{(Doc 1, A nice movie.), (Doc 2, A bad film.), (Doc 3, Pretty nice movie.), (Doc 4, Pretty bad movie!), (Doc 5, Really nice film.)}");
 }
@@ -54,7 +80,7 @@ TEST(test_inverted_index, intersect_4) {
 
 TEST(test_inverted_index, process_query_1) {
   InvertedIndex inverted_index;
-  inverted_index.build_from_file("example.tsv");
+  inverted_index.build_from_file("testdata/test_data.tsv");
   std::vector<std::string> keywords = {};
   std::vector<int> intersection = {};
   EXPECT_EQ(inverted_index.process_query(keywords), intersection);
@@ -62,7 +88,7 @@ TEST(test_inverted_index, process_query_1) {
 
 TEST(test_inverted_index, process_query_2) {
   InvertedIndex inverted_index;
-  inverted_index.build_from_file("example.tsv");
+  inverted_index.build_from_file("testdata/test_data.tsv");
   std::vector<std::string> keywords = {"doc"};
   std::vector<int> intersection = {1, 2, 3, 4, 5};
   EXPECT_EQ(inverted_index.process_query(keywords), intersection);
@@ -70,7 +96,7 @@ TEST(test_inverted_index, process_query_2) {
 
 TEST(test_inverted_index, process_query_3) {
   InvertedIndex inverted_index;
-  inverted_index.build_from_file("example.tsv");
+  inverted_index.build_from_file("testdata/test_data.tsv");
   std::vector<std::string> keywords = {"doc", "movie"};
   std::vector<int> intersection = {1, 3, 4};
   EXPECT_EQ(inverted_index.process_query(keywords), intersection);
@@ -78,7 +104,7 @@ TEST(test_inverted_index, process_query_3) {
 
 TEST(test_inverted_index, process_query_4) {
   InvertedIndex inverted_index;
-  inverted_index.build_from_file("example.tsv");
+  inverted_index.build_from_file("testdata/test_data.tsv");
   std::vector<std::string> keywords = {"bad", "movie"};
   std::vector<int> intersection = {4};
   EXPECT_EQ(inverted_index.process_query(keywords), intersection);
@@ -86,7 +112,7 @@ TEST(test_inverted_index, process_query_4) {
 
 TEST(test_inverted_index, process_query_5) {
   InvertedIndex inverted_index;
-  inverted_index.build_from_file("example.tsv");
+  inverted_index.build_from_file("testdata/test_data.tsv");
   std::vector<std::string> keywords = {"bad"};
   std::vector<int> intersection = {2, 4};
   EXPECT_EQ(inverted_index.process_query(keywords), intersection);
@@ -94,7 +120,7 @@ TEST(test_inverted_index, process_query_5) {
 
 TEST(test_inverted_index, process_query_6) {
   InvertedIndex inverted_index;
-  inverted_index.build_from_file("example.tsv");
+  inverted_index.build_from_file("testdata/test_data.tsv");
   std::vector<std::string> keywords = {"doc", "nice"};
   std::vector<int> intersection = {1, 3, 5};
   EXPECT_EQ(inverted_index.process_query(keywords), intersection);
@@ -102,7 +128,7 @@ TEST(test_inverted_index, process_query_6) {
 
 TEST(test_inverted_index, process_query_7) {
   InvertedIndex inverted_index;
-  inverted_index.build_from_file("example.tsv");
+  inverted_index.build_from_file("testdata/test_data.tsv");
   std::vector<std::string> keywords = {"doc", "nice", "movie"};
   std::vector<int> intersection = {1, 3};
   EXPECT_EQ(inverted_index.process_query(keywords), intersection);
@@ -110,7 +136,7 @@ TEST(test_inverted_index, process_query_7) {
 
 TEST(test_inverted_index, process_query_8) {
   InvertedIndex inverted_index;
-  inverted_index.build_from_file("example.tsv");
+  inverted_index.build_from_file("testdata/test_data.tsv");
   std::vector<std::string> keywords = {"doc", "nice", "movie", "action"};
   std::vector<int> intersection = {};
   EXPECT_EQ(inverted_index.process_query(keywords), intersection);
