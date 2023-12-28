@@ -86,7 +86,7 @@ void InvertedIndex::build_from_file(std::string file, float b, float k) {
 }
 
 void InvertedIndex::BM25(float N, float DL, float b, float k) {
-  // BM25 = tf * (k+1) / (k * (1 - b + b * DL/AVDL) + tf) * log2(N/df)
+  // BM25_score = tf * (k+1) / (k * (1 - b + b * DL/AVDL) + tf) * log2(N/df)
   // N: total number of Documents.
   // AVDL: average document length.
   // tf: term frequency.
