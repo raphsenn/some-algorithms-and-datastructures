@@ -8,29 +8,28 @@
 TEST(inverted_index, build_from_file_1) {
   InvertedIndex inverted_index;
   inverted_index.build_from_file("example.tsv", 0.75, 1.75);
-  EXPECT_EQ(inverted_index.inverted_lists_to_string(),
-    "{action: [(1, 0.763345)], adventure: [(1, 0.468043), (6, 0.468043)], comedy: [(4, 0.763345)], drama: [(2, 0.468043), (5, 0.468043)], "
-    "fantasy: [(6, 0.763345)], fiction: [(3, 0.763345)], film: [(1, 0.763345)], historical: [(5, 0.763345)], movie: [(1, 0.000000), (2, 0.000000), "
-    "(3, 0.000000), (4, 0.000000), (5, 0.000000), (6, 0.000000)], mystery: [(4, 0.763345)], romantic: [(2, 0.763345)], science: [(3, 0.763345)], "
-    "thriller: [(3, 0.763345)]}");
+  EXPECT_EQ(inverted_index.inverted_lists_to_string(),"{action: [(1, 0.763000)], adventure: [(1, 0.468000), (6, 0.468000)], "
+  "comedy: [(4, 0.763000)], drama: [(2, 0.468000), (5, 0.468000)], fantasy: [(6, 0.763000)], fiction: [(3, 0.763000)], film: [(1, 0.763000)], "
+  "historical: [(5, 0.763000)], movie: [(1, 0.000000), (2, 0.000000), (3, 0.000000), (4, 0.000000), (5, 0.000000), (6, 0.000000)], "
+  "mystery: [(4, 0.763000)], romantic: [(2, 0.763000)], science: [(3, 0.763000)], thriller: [(3, 0.763000)]}");
 }
 
 TEST(inverted_index, build_from_file_2) {
   InvertedIndex inverted_index;
   inverted_index.build_from_file("example.tsv", 0.0, 0.0);
-  EXPECT_EQ(inverted_index.inverted_lists_to_string(), "{action: [(1, 2.584963)], adventure: [(1, 1.584962), (6, 1.584962)], "
-  "comedy: [(4, 2.584963)], drama: [(2, 1.584962), (5, 1.584962)], fantasy: [(6, 2.584963)], fiction: [(3, 2.584963)], film: [(1, 2.584963)], "
-  "historical: [(5, 2.584963)], movie: [(1, 0.000000), (2, 0.000000), (3, 0.000000), (4, 0.000000), (5, 0.000000), (6, 0.000000)], mystery: "
-  "[(4, 2.584963)], romantic: [(2, 2.584963)], science: [(3, 2.584963)], thriller: [(3, 2.584963)]}");
+  EXPECT_EQ(inverted_index.inverted_lists_to_string(), "{action: [(1, 2.585000)], adventure: [(1, 1.585000), (6, 1.585000)], "
+  "comedy: [(4, 2.585000)], drama: [(2, 1.585000), (5, 1.585000)], fantasy: [(6, 2.585000)], fiction: [(3, 2.585000)], film: [(1, 2.585000)], "
+  "historical: [(5, 2.585000)], movie: [(1, 0.000000), (2, 0.000000), (3, 0.000000), (4, 0.000000), (5, 0.000000), (6, 0.000000)], "
+  "mystery: [(4, 2.585000)], romantic: [(2, 2.585000)], science: [(3, 2.585000)], thriller: [(3, 2.585000)]}");
 }
 
 TEST(inverted_index, build_from_file_3) {
   InvertedIndex inverted_index;
   inverted_index.build_from_file("example.tsv", 0.0, 10000.0);
-  EXPECT_EQ(inverted_index.inverted_lists_to_string(), "{action: [(1, 2.584963)], adventure: [(1, 1.584962), (6, 1.584962)], comedy: [(4, 2.584963)], "
-  "drama: [(2, 1.584962), (5, 1.584962)], fantasy: [(6, 2.584963)], fiction: [(3, 2.584963)], film: [(1, 2.584963)], historical: [(5, 2.584963)], "
-  "movie: [(1, 0.000000), (2, 0.000000), (3, 0.000000), (4, 0.000000), (5, 0.000000), (6, 0.000000)], mystery: [(4, 2.584963)], "
-  "romantic: [(2, 2.584963)], science: [(3, 2.584963)], thriller: [(3, 2.584963)]}");
+  EXPECT_EQ(inverted_index.inverted_lists_to_string(), "{action: [(1, 2.585000)], adventure: [(1, 1.585000), (6, 1.585000)], "
+  "comedy: [(4, 2.585000)], drama: [(2, 1.585000), (5, 1.585000)], fantasy: [(6, 2.585000)], fiction: [(3, 2.585000)], film: [(1, 2.585000)], "
+  "historical: [(5, 2.585000)], movie: [(1, 0.000000), (2, 0.000000), (3, 0.000000), (4, 0.000000), (5, 0.000000), (6, 0.000000)], "
+  "mystery: [(4, 2.585000)], romantic: [(2, 2.585000)], science: [(3, 2.585000)], thriller: [(3, 2.585000)]}");
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -93,12 +92,26 @@ TEST(inverted_index, process_query_1) {
   InvertedIndex inverted_index;
   inverted_index.build_from_file("example.tsv", 0.0, 0.0);
   std::vector<std::string> keywords = {"action", "adventure"}; 
-  std::vector<std::tuple<int, float>> list_result = {{1, 2.584963 + 1.584962}, {6, 1.58496249}};
+  std::vector<std::tuple<int, float>> list_result = {{1, 2.585 + 1.585}, {6, 1.585}};
   EXPECT_EQ(inverted_index.process_query(keywords), list_result); 
 }
 
-// action: [(1, 2.584963)], adventure: [(1, 1.584962), (6, 1.584962)]
+TEST(inverted_index, process_query_2) {
+  InvertedIndex inverted_index;
+  inverted_index.build_from_file("example.tsv", 0.0, 0.0);
+  std::vector<std::string> keywords = {"comedy", "drama"};
 
+  std::vector<std::tuple<int, float>> list_result = { {4, 2.585}, {2, 1.585}, {5, 1.585} };
+  EXPECT_EQ(inverted_index.process_query(keywords), list_result); 
+}
+
+TEST(inverted_index, process_query_3) {
+  InvertedIndex inverted_index;
+  inverted_index.build_from_file("example.tsv", 0.0, 0.0);
+  std::vector<std::string> keywords = {"science"}; 
+  std::vector<std::tuple<int, float>> list_result = {{3, 2.585}};
+  EXPECT_EQ(inverted_index.process_query(keywords), list_result); 
+}
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

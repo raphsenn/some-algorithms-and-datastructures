@@ -107,6 +107,8 @@ void InvertedIndex::BM25(float N, float DL, float b, float k) {
       }
       else { 
         BM25_score = (tf * (k+1.0) / (k * (1.0 - b + b * DL/AVDL) + tf)) * log2(N/df);
+        // Round BM25_score to 3 decimals.
+        BM25_score = std::round(BM25_score * 1000.0) / 1000.0;
       } 
       val[i] = std::make_tuple(document_id, BM25_score); 
     } 
