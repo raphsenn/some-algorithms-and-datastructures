@@ -45,6 +45,60 @@ TEST(inverted_index, merge_1) {
   EXPECT_EQ(inverted_index.merge(list_1, list_2), list_result); 
 }
 
+TEST(inverted_index, merge_2) {
+  InvertedIndex inverted_index;
+  std::vector<std::tuple<int, float>> list_1 = {{3, 1.7}, {5, 3.2}, {7, 4.1}};
+  std::vector<std::tuple<int, float>> list_2 = {{1, 2.3}, {5, 1.3}};
+  std::vector<std::tuple<int, float>> list_result = {{1, 2.3}, {3, 1.7}, {5, 4.5}, {7, 4.1}};
+  EXPECT_EQ(inverted_index.merge(list_1, list_2), list_result); 
+}
+
+TEST(inverted_index, merge_3) {
+  InvertedIndex inverted_index;
+  std::vector<std::tuple<int, float>> list_1 = {};
+  std::vector<std::tuple<int, float>> list_2 = {{1, 2.3}, {5, 1.3}};
+  std::vector<std::tuple<int, float>> list_result = {{1, 2.3}, {5, 1.3}};
+  EXPECT_EQ(inverted_index.merge(list_1, list_2), list_result); 
+}
+
+TEST(inverted_index, merge_4) {
+  InvertedIndex inverted_index;
+  std::vector<std::tuple<int, float>> list_1 = {{1, 2.1}};
+  std::vector<std::tuple<int, float>> list_2 = {};
+  std::vector<std::tuple<int, float>> list_result = {{1, 2.1}};
+  EXPECT_EQ(inverted_index.merge(list_1, list_2), list_result); 
+}
+
+TEST(inverted_index, merge_5) {
+  InvertedIndex inverted_index;
+  std::vector<std::tuple<int, float>> list_1 = {{1, 2.1}, {2, 1.3}, {4, 5.5}};
+  std::vector<std::tuple<int, float>> list_2 = {{3, 1.1}};
+  std::vector<std::tuple<int, float>> list_result = {{1, 2.1}, {2, 1.3}, {3, 1.1}, {4, 5.5}};
+  EXPECT_EQ(inverted_index.merge(list_1, list_2), list_result); 
+}
+
+TEST(inverted_index, merge_6) {
+  InvertedIndex inverted_index;
+  std::vector<std::tuple<int, float>> list_1 = {{1, 2.1}, {2, 1.1}};
+  std::vector<std::tuple<int, float>> list_2 = {{1, 1.0}, {2, 1.1}};
+  std::vector<std::tuple<int, float>> list_result = {{1, 3.1}, {2, 2.2}};
+  EXPECT_EQ(inverted_index.merge(list_1, list_2), list_result); 
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Test: process_query
+//////////////////////////////////////////////////////////////////////////////
+
+TEST(inverted_index, process_query_1) {
+  InvertedIndex inverted_index;
+  inverted_index.build_from_file("example.tsv", 0.0, 0.0);
+  std::vector<std::string> keywords = {"action", "adventure"}; 
+  std::vector<std::tuple<int, float>> list_result = {{1, 2.584963 + 1.584962}, {6, 1.58496249}};
+  EXPECT_EQ(inverted_index.process_query(keywords), list_result); 
+}
+
+// action: [(1, 2.584963)], adventure: [(1, 1.584962), (6, 1.584962)]
+
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

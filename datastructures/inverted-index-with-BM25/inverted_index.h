@@ -29,32 +29,28 @@ class InvertedIndex {
     // Build inverted_lists and records from file.
     void build_from_file(std::string file, float b, float k);
 
+    // Inefficient implementation of the BM25 Algorithm, incorporating parameters N, DL, b, and k.
+    void BM25(float N, float DL, float b, float k);
+
     // Find words from line.
     std::vector<std::string> get_words(std::string query);
-    
-    // Convert inverted_lists to string.
-    std::string inverted_lists_to_string();
+  
+    // Compute the union of the two given inverted lists whre n is the number of Elements in both lists. 
+    std::vector<std::tuple<int, float>> merge(std::vector<std::tuple<int, float>> list_1, std::vector<std::tuple<int, float>> list_2);
 
-    // Convert records to string.
-    std::string records_to_string();
-    
+    // Processes a keyword query, fetching inverted lists, computing their union, and sorting by BM25 scores in descending order.
+    std::vector<std::tuple<int, float>> process_query(std::vector<std::string> keywords);
+
     // Python like strip method.
     std::string strip(std::string str); 
 
     // Python like split method.
     std::vector<std::string> split(std::string& line, char delimiter);
-    
-    // Compute the union of the two given inverted lists
-    // whre n is the number of Elements in both lists. 
-    std::vector<std::tuple<int, float>> merge(std::vector<std::tuple<int, float>> list_1, std::vector<std::tuple<int, float>> list_2);
 
-    // Implement your logic to fetch and compute the intersection of inverted lists here.
-    // The result should be a vector of integers representing the document IDs.
-    std::vector<int> process_query(std::vector<std::string>);
-    
-    // Unefficient implementation of BM25 Algorithm.
-    void BM25(float N, float DL, float b, float k);
-    
+    // Converts the inverted_lists to a formatted string.
+    std::string inverted_lists_to_string();
 
+    // Converts the records to a formatted string.
+    std::string records_to_string();
 };
 #endif // INVERTED_INDEX_H

@@ -31,10 +31,14 @@ void InvertedIndex::build_from_file(std::string file, float b, float k) {
     N += 1.0;
     
     // Cache title and description of the Document.
-    //std::vector<std::string> split_line = split(line, '\t'); 
-    //std::string title = split_line[0];
-    //std::string description = split_line[1];
-    //records.emplace_back(std::make_tuple(title, description));
+    std::vector<std::string> split_line = split(line, '\t'); 
+    
+    // Check if split_line has at least two elements before accessing them.
+    if (split_line.size() >= 2) {
+      std::string title = split_line[0];
+      std::string description = split_line[1];
+      records.emplace_back(std::make_tuple(title, description));
+    }   
 
     // Cache words of the Document.
     line = strip(line);
@@ -81,6 +85,34 @@ void InvertedIndex::build_from_file(std::string file, float b, float k) {
   BM25(N, DL, b, k);  
 }
 
+void InvertedIndex::BM25(float N, float DL, float b, float k) {
+  // BM25 = tf * (k+1) / (k * (1 - b + b * DL/AVDL) + tf) * log2(N/df)
+  // N: total number of Documents.
+  // AVDL: average document length.
+  // tf: term frequency.
+  // df: document frequency.
+  float AVDL = DL / N;
+  float BM25_score;
+  for (auto it = inverted_lists.begin(); it != inverted_lists.end(); ++it) {
+    std::vector<std::tuple<int, float>>& val = it->second; 
+    const auto& key = it->first;
+    
+    for (int i = 0; i < val.size(); i++) {
+      float df = val.size(); 
+      float document_id = std::get<0>(val[i]); 
+      float tf = std::get<1>(val[i]); 
+      
+      if (std::isinf(k)) {
+        BM25_score = tf * log2(N/df);
+      }
+      else { 
+        BM25_score = (tf * (k+1.0) / (k * (1.0 - b + b * DL/AVDL) + tf)) * log2(N/df);
+      } 
+      val[i] = std::make_tuple(document_id, BM25_score); 
+    } 
+  } 
+}
+
 std::vector<std::string> InvertedIndex::get_words(std::string query) {
   // Vector of all words from query. 
   std::vector<std::string> matches;
@@ -102,6 +134,58 @@ std::vector<std::string> InvertedIndex::get_words(std::string query) {
   return matches;
 }
 
+std::vector<std::tuple<int, float>> InvertedIndex::merge(std::vector<std::tuple<int, float>> list_1, std::vector<std::tuple<int, float>> list_2) {
+  std::vector<std::tuple<int, float>> matches;
+  
+  int i = 0; // Pointer to list_1
+  int j = 0; // pointer to list_2
+  
+  while (i < list_1.size() && j < list_2.size()) {
+    if (std::get<0>(list_1[i]) < std::get<0>(list_2[j])) { 
+      matches.emplace_back(std::make_tuple(std::get<0>(list_1[i]), std::get<1>(list_1[i])));
+      i += 1;    
+    }
+    else if (std::get<0>(list_1[i]) > std::get<0>(list_2[j])) {
+      matches.emplace_back(std::make_tuple(std::get<0>(list_2[j]), std::get<1>(list_2[j])));
+      j += 1; 
+    }
+    else {
+      matches.emplace_back(std::make_tuple(std::get<0>(list_1[i]), std::get<1>(list_1[i]) + std::get<1>(list_2[j])));
+      i += 1;
+      j += 1;
+    }
+  }  
+  if (i < list_1.size()) {
+    for (int x = i; x < list_1.size(); x++) {
+      matches.emplace_back(list_1[x]);
+    }
+  }
+  
+  if (j < list_2.size()) {
+    for (int x = j; x < list_2.size(); x++) {
+      matches.emplace_back(list_2[x]);
+    }
+  }
+  return matches;
+}
+
+std::vector<std::tuple<int, float>> InvertedIndex::process_query(std::vector<std::string> keywords) {
+  if (keywords.empty()) {
+    return {};
+  } 
+  std::vector<std::tuple<int, float>> matches = inverted_lists[keywords[0]];
+  for (int i = 1; i < keywords.size(); i++) {
+    matches = merge(matches, inverted_lists[keywords[i]]);    
+  }
+
+  // Sort by BM25 Score.
+  auto customComparator = [](const auto& tuple1, const auto& tuple2) {
+    return std::get<1>(tuple1) > std::get<1>(tuple2);};
+  std::sort(matches.begin(), matches.end(), customComparator);
+  
+  return matches;
+}
+
 std::string InvertedIndex::strip(std::string str) {
   size_t start = str.find_first_not_of(" \t\n\r");
   size_t end = str.find_last_not_of(" \t\n\r");
@@ -112,6 +196,17 @@ std::string InvertedIndex::strip(std::string str) {
   }
 
   return str.substr(start, end - start + 1);
+}
+
+std::vector<std::string> InvertedIndex::split(std::string& line, char delimiter) {
+  std::vector<std::string> tokens;
+  std::istringstream stream(line);
+  std::string token;
+  int i = 0;
+  while (std::getline(stream, token, delimiter)) {
+      tokens.push_back(token);
+  }
+  return tokens;
 }
 
 std::string InvertedIndex::inverted_lists_to_string() {
@@ -156,93 +251,3 @@ std::string InvertedIndex::records_to_string() {
   records_as_string += "}";
   return records_as_string;
 }
-
-std::vector<std::string> InvertedIndex::split(std::string& line, char delimiter) {
-  std::vector<std::string> tokens;
-  std::istringstream stream(line);
-  std::string token;
-  while (std::getline(stream, token, delimiter)) {
-      tokens.push_back(token);
-  }
-  return tokens;
-}
-
-std::vector<std::tuple<int, float>> InvertedIndex::merge(std::vector<std::tuple<int, float>> list_1, std::vector<std::tuple<int, float>> list_2) {
-  std::vector<std::tuple<int, float>> matches;
-  
-  int i = 0; // Pointer to list_1
-  int j = 0; // pointer to list_2
-  
-  while (i < list_1.size() && j < list_2.size()) {
-    if (std::get<0>(list_1[i]) < std::get<0>(list_2[j])) { 
-      matches.emplace_back(std::make_tuple(std::get<0>(list_1[i]), std::get<1>(list_1[i])));
-      i += 1;    
-    }
-    else if (std::get<0>(list_1[i]) > std::get<0>(list_2[j])) {
-      matches.emplace_back(std::make_tuple(std::get<0>(list_2[j]), std::get<1>(list_2[j])));
-      j += 1; 
-    }
-    else {
-      matches.emplace_back(std::make_tuple(std::get<0>(list_1[i]), std::get<1>(list_1[i]) + std::get<1>(list_2[j])));
-      i += 1;
-      j += 1;
-    }
-  }  
-  if (i < list_1.size()) {
-    for (int x = i; x < list_1.size(); x++) {
-      matches.emplace_back(list_1[x]);
-    }
-  }
-  
-  if (j < list_2.size()) {
-    for (int x = j; x < list_2.size(); x++) {
-      matches.emplace_back(list_2[x]);
-    }
-  }
-  return matches;
-}
-
-std::vector<int> InvertedIndex::process_query(std::vector<std::string> keywords) {
-  if (keywords.empty()) {
-    return {};
-  } 
-  //std::vector<int> matches = inverted_lists[keywords[0]];
-  //for (int i = 1; i < keywords.size(); i++) {
-  //  matches = intersect(matches, inverted_lists[keywords[i]]);    
-  //}
-  return {};
-}
-
-void InvertedIndex::BM25(float N, float DL, float b, float k) {
-  // BM25 = tf * (k+1) / (k * (1 - b + b * DL/AVDL) + tf) * log2(N/df)
-  // N: total number of Documents.
-  // AVDL: average document length.
-  // tf: term frequency.
-  // df: document frequency.
-  
-  float AVDL = DL / N;
-  float BM25_score;
-  for (auto it = inverted_lists.begin(); it != inverted_lists.end(); ++it) {
-    std::vector<std::tuple<int, float>>& val = it->second; 
-    const auto& key = it->first;
-    
-    for (int i = 0; i < val.size(); i++) {
-      float df = val.size(); 
-      float document_id = std::get<0>(val[i]); 
-      float tf = std::get<1>(val[i]); 
-      
-      if (std::isinf(k)) {
-        BM25_score = tf * log2(N/df);
-      }
-      else { 
-        BM25_score = (tf * (k+1.0) / (k * (1.0 - b + b * DL/AVDL) + tf)) * log2(N/df);
-      } 
-      val[i] = std::make_tuple(document_id, BM25_score); 
-    } 
-  } 
-}
-
-
-
-
-
