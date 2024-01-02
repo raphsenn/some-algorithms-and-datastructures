@@ -4,9 +4,9 @@
 #include <algorithm>
 #include <random>
 
-#include "./min_sort.h"
+#include "./minsort.h"
 
-TEST(min_sort, test_min_sort) {
+TEST(minsort, test_minsort) {
   // Size of testing arrays.
   const int size = 100;
 
@@ -27,7 +27,7 @@ TEST(min_sort, test_min_sort) {
     std::shuffle(testing_array, testing_array + size, std::default_random_engine(std::rand()));
 
     // Apply min_sort to the testing_array
-    min_sort(testing_array, size);
+    minsort(testing_array, size);
 
     // Compare each element in sorted_array and testing_array
     for (int j = 0; j < size; j++) {

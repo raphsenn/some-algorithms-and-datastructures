@@ -1,5 +1,5 @@
-#ifndef MIN_SORT_H
-#define MIN_SORT_H
+#ifndef MINSORT_H
+#define MINSORT_H
 
 // min_sort: Simple implementation of the selection sort algorithm.
 // Sorts an integer array in ascending order.
@@ -12,4 +12,4 @@
 
 void min_sort(int *arr, int length_of_arr);
 
-#endif // MIN_SORT_H
+#endif // MINSORT_H
