@@ -1,5 +1,9 @@
+#include <vector>
 #include <map>
 #include <any>
+#include <tuple>
+#include <cstdio>
+#include <string>
 
 // Easy implementation of an undirected graph.
 // In an undirected graph, edges have no direction, and they
@@ -14,15 +18,16 @@ class Graph {
 
   private:
     std::vector<std::any> vertices;
-    std::vector<std::any> edges;
+    std::vector<std::tuple<std::any, std::any>> edges;
     std::map<std::any, std::vector<std::any>> adjacency_list;
 
   public:
-    // V set of verteces
-    // E set of edges
-    Graph(std::vector<any> V, std::vector<std::tuple<std::any, std::any>> E);
+    // V vector<any> of verteces, E vector<any> of edges.
+    Graph(std::vector<std::any> V, std::vector<std::tuple<std::any, std::any>> E);
+    
     void create_graph();
-    std::map<std::any, std::vector<std::any>> get_adjacency_list;
+    
+    std::map<std::any, std::vector<std::any>> get_adjacency_list();
 
 };
 
