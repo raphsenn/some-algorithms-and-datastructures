@@ -10,6 +10,6 @@
 //
 // This function directly modifies the input array.
 
-void min_sort(int *arr, int length_of_arr);
+void minsort(int *arr, int length_of_arr);
 
 #endif // MINSORT_H

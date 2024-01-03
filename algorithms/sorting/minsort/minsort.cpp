@@ -1,6 +1,6 @@
-#include "./min_sort.h"
+#include "./minsort.h"
 
-void min_sort(int *arr, int length_of_arr) {
+void minsort(int *arr, int length_of_arr) {
   for (int i = 0; i <  length_of_arr; i++) {
     int current_min = arr[i]; 
     int current_min_index = i; 
