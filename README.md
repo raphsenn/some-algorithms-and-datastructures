@@ -1,8 +1,11 @@
 # some-algorithms-and-datastructures-in-cplusplus
 
-# Datastructures
-## Graphs
-### Undirected graph
+## Datastructures
+
+### Graphs
+
+#### Undirected graph
+
 <table>
   <thead>
     <tr>
