@@ -48,4 +48,7 @@ class Graph {
    
     // Returns the adjacency matrix.
     std::vector<std::vector<int>> get_adjacency_matrix();
+  
+    // Print graph as adjacency list.
+    void print();
 };
