@@ -15,11 +15,11 @@
   </thead>
   <tbody>
     <tr>
-      <td>test</td>
+      <td>create_adjacency_list</td>
       <td>test</td>
     </tr>
     <tr>
-      <td>test</td>
+      <td>&#920;(m + n)</td>
       <td>test</td>
     </tr>
   </tbody>
