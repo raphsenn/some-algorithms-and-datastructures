@@ -11,3 +11,4 @@ compile:
 clean:
 	rm -f *.o
 	rm -f main
+	rm -f test
