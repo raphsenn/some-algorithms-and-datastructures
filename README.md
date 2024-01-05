@@ -26,7 +26,7 @@ This includes that n = |V| = |{v1, v2, v3, ..., v10}| = 10 and m = |E| = |{(v1, 
       <td>&#920;(m + n)</td>
     </tr>
     <tr>
-        <td>get_verteces</td>
+        <td>get_vertices</td>
       <td>&#920;(1)</td>
     </tr>
     <tr>
