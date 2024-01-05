@@ -20,6 +20,7 @@
 #include <tuple>
 #include <cstdio>
 #include <string>
+#include <algorithm>
 
 class Graph {
   // Let n be the number of verteces and m the number of edges from
@@ -33,12 +34,14 @@ class Graph {
   public:
     // V vector<any> of verteces, E vector<any> of edges.
     Graph(std::vector<int> V, std::vector<std::tuple<int, int>> E);
-   
-    // Fill the adjacency list.
-    void create_graph();
+ 
+    void check_if_edges_missing(); 
 
-    // Returns vector of Verteces.
-    std::vector<int> get_verteces();
+    // Fill the adjacency list.
+    void create_adjacency_list();
+
+    // Returns vector of Vertices.
+    std::vector<int> get_vertices();
    
     // Returns vector of tuple of edges.
     std::vector<std::tuple<int, int>> get_edges();

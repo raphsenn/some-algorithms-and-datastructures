@@ -1,9 +1,20 @@
 #include "./graph.h"
 
 Graph::Graph(std::vector<int> V, std::vector<std::tuple<int, int>> E)
-  : vertices(V), edges(E) { create_graph(); }
+  : vertices(V), edges(E) { check_if_edges_missing(); create_adjacency_list(); }
 
-void Graph::create_graph() {
+
+void Graph::check_if_edges_missing() {
+  for (int i = 0; i < edges.size(); i++) {
+    std::tuple edge= std::make_tuple(std::get<1>(edges[i]), std::get<0>(edges[i]));
+    if (!(std::find(edges.begin(), edges.end(), edge) != edges.end())) {
+      edges.emplace_back(edge);
+    }
+  }
+}
+
+
+void Graph::create_adjacency_list() {
   for (int i = 0; i < vertices.size(); i++) {
     adjacency_list[i] = {};
   }
@@ -15,7 +26,7 @@ void Graph::create_graph() {
     }
   }
 
-std::vector<int> Graph::get_verteces() { return vertices; }
+std::vector<int> Graph::get_vertices() { return vertices; }
 
 std::vector<std::tuple<int, int>> Graph::get_edges() { return edges; }
 
