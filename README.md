@@ -26,6 +26,14 @@ This includes that n = |V| = |{v1, v2, v3, ..., v10}| = 10 and m = |E| = |{(v1, 
       <td>&#920;(m + n)</td>
     </tr>
     <tr>
+      <td>create_adjacency_matrix</td>
+      <td>&#920;($\ n^2$)</td>
+    </tr>
+    <tr>
+      <td>edge_in_edges</td>
+      <td>&#927;(n)</td>
+    </tr>
+    <tr>
         <td>get_vertices</td>
       <td>&#920;(1)</td>
     </tr>
@@ -33,6 +41,11 @@ This includes that n = |V| = |{v1, v2, v3, ..., v10}| = 10 and m = |E| = |{(v1, 
       <td>get_edges</td>
       <td>&#920;(1)</td>
     </tr>
+    <tr>
+      <td>print</td>
+      <td>&#920;(m + n)</td>
+    </tr>
+
   </tbody>
 </table>
 
