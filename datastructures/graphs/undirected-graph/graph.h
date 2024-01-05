@@ -34,11 +34,18 @@ class Graph {
   public:
     // V vector<any> of verteces, E vector<any> of edges.
     Graph(std::vector<int> V, std::vector<std::tuple<int, int>> E);
- 
+
+    // Fill missing edges. 
     void check_if_edges_missing(); 
+
+    // Returns true if edge in edges, else false.
+    bool edge_in_edges(std::tuple<int, int> edge);
 
     // Fill the adjacency list.
     void create_adjacency_list();
+
+    // Fill the adjacency matrix.
+    void create_adjacency_matrix();
 
     // Returns vector of Vertices.
     std::vector<int> get_vertices();

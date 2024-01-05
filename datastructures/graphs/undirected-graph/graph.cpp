@@ -7,12 +7,18 @@ Graph::Graph(std::vector<int> V, std::vector<std::tuple<int, int>> E)
 void Graph::check_if_edges_missing() {
   for (int i = 0; i < edges.size(); i++) {
     std::tuple edge= std::make_tuple(std::get<1>(edges[i]), std::get<0>(edges[i]));
-    if (!(std::find(edges.begin(), edges.end(), edge) != edges.end())) {
+    if (!edge_in_edges(edge)) { 
       edges.emplace_back(edge);
     }
   }
 }
 
+bool Graph::edge_in_edges(std::tuple<int, int> edge) {
+  if (std::find(edges.begin(), edges.end(), edge) != edges.end()) {
+    return true; 
+  }
+  return false;
+}
 
 void Graph::create_adjacency_list() {
   for (int i = 0; i < vertices.size(); i++) {
@@ -26,9 +32,22 @@ void Graph::create_adjacency_list() {
     }
   }
 
+void Graph::create_adjacency_matrix() {
+  for (int i = 0; i < vertices.size(); i++) {
+    for (int j = 0; j < vertices.size(); j++) {
+      if (edge_in_edges(std::make_tuple(i, j))) {
+        adjacency_matrix[i][j] = 1;
+      } else { adjacency_matrix[i][j] = 0; }; 
+    }
+  }
+
+}
+
+
 std::vector<int> Graph::get_vertices() { return vertices; }
 
 std::vector<std::tuple<int, int>> Graph::get_edges() { return edges; }
+
 
 void Graph::print() {
   printf("{"); 
