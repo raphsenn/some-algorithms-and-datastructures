@@ -44,9 +44,9 @@ void Graph::create_adjacency_matrix() {
 }
 
 
-std::vector<int> Graph::get_vertices() { return vertices; }
+std::vector<int> Graph::get_vertices(){ return vertices; }
 
-std::vector<std::tuple<int, int>> Graph::get_edges() { return edges; }
+std::vector<std::tuple<int, int>> Graph::get_edges(){ return edges; }
 
 
 void Graph::print() {
@@ -54,7 +54,7 @@ void Graph::print() {
   for (auto it = adjacency_list.begin(); it != adjacency_list.end(); ++it) {
     printf("%d: [", it->first);
     for (int j = 0; j < it->second.size(); j++) {
-      if (j != it->second.size() - 1) { 
+      if (j != it->second.size()-1) {
         printf("%d, ", it->second[j]);
       } else { printf("%d", it->second[j]); }
     }

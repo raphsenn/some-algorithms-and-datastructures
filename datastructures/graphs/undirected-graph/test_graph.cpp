@@ -53,6 +53,22 @@ TEST(graph, get_edges_2) {
   ASSERT_EQ(graph.get_edges(), edges); 
 }
 
+TEST(graph, get_edges_3) {
+  std::vector<int> vertices = {0};
+  std::vector<std::tuple<int, int>> edges = {};
+  Graph graph(vertices, edges);
+  ASSERT_EQ(graph.get_edges(), edges); 
+}
+
+TEST(graph, get_edges_4) {
+  std::vector<int> vertices = {0, 1, 2};
+  std::vector<std::tuple<int, int>> edges = {{0, 1}, {0, 2}};
+  std::vector<std::tuple<int, int>> expected_edges = {{0, 1}, {0, 2}, {1, 0}, {2, 0}};
+  Graph graph(vertices, edges);
+  ASSERT_EQ(graph.get_edges(), expected_edges); 
+}
+
+
 
 
 
