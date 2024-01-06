@@ -53,6 +53,12 @@ class Graph {
     // Returns vector of tuple of edges.
     std::vector<std::tuple<int, int>> get_edges();
 
+    // Returns the in-degree of an vertex.
+    int in_degree(int vertex);
+
+    // Returns the out-degree of an vertex.
+    int out_degree(int vertex);
+
     // Returns the adjacency list.
     std::map<int, std::vector<int>> get_adjacency_list();
    

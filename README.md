@@ -49,3 +49,6 @@ This includes that n = |V| = |{v1, v2, v3, ..., v10}| = 10 and m = |E| = |{(v1, 
   </tbody>
 </table>
 
+### Inverted Index
+
+#### Inverted Index with BM25 Algorithm
