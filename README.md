@@ -31,7 +31,7 @@ This includes that n = |V| = |{v1, v2, v3, ..., v10}| = 10 and m = |E| = |{(v1, 
     </tr>
     <tr>
       <td>edge_in_edges</td>
-      <td>&#927;(n)</td>
+      <td>&#927;(m)</td>
     </tr>
     <tr>
         <td>get_vertices</td>
