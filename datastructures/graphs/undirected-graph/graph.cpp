@@ -47,9 +47,9 @@ std::vector<int> Graph::get_vertices(){ return vertices; }
 
 std::vector<std::tuple<int, int>> Graph::get_edges(){ return edges; }
 
-int in_degree(int vertex) {return 0;}
+int Graph::in_degree(int vertex) { return 0; }
 
-int out_degree(int vertex) {return 0;}
+int Graph::out_degree(int vertex) { return adjacency_list[vertex].size(); }
 
 void Graph::print() {
   printf("{"); 
