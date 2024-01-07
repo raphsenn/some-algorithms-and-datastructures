@@ -74,6 +74,69 @@ and m = |E| = |{(v1, v2), (v2, v3), (v3, v4), ..., (v9, v10)| = 9.
   </tbody>
 </table>
 
+#### Directed graph
+
+<table>
+  <thead>
+    <tr>
+      <th>Method</th>
+      <th>Runtime</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>create_adjacency_list</td>
+      <td>&#920;(m + n)</td>
+    </tr>
+    <tr>
+      <td>create_adjacency_matrix</td>
+      <td>&#920;($\ n^2$)</td>
+    </tr>
+    <tr>
+      <td>get_adjacency_list</td>
+      <td>&#920;(1)</td>
+    </tr>
+    <tr>
+      <td>get_adjacency_matrix</td>
+      <td>&#920;(1)</td>
+    </tr>
+    <tr>
+      <td>edge_in_edges(edge)</td>
+      <td>&#927;(m)</td>
+    </tr>
+    <tr>
+      <td>get_vertices</td>
+      <td>&#920;(1)</td>
+    </tr>
+    <tr>
+      <td>get_edges</td>
+      <td>&#920;(1)</td>
+    </tr>
+    <tr>
+      <td>get_out_degree(vertex)</td>
+      <td>&#920;(1)</td>
+    </tr>
+    <tr>
+      <td>get_in_degree(vertex)</td>
+      <td>&#920;(m)</td>
+    </tr>
+    <tr>
+      <td>get_adjacency_list_as_string</td>
+      <td>&#920;(m + n)</td>
+    </tr>
+    <tr>
+      <td>get_adjacency_matrix_as_string</td>
+      <td>&#920;($n^{2}$)</td>
+    </tr>
+    <tr>
+      <td>print</td>
+      <td>&#920;(m + n)</td>
+    </tr>
+
+  </tbody>
+</table>
+
+
 ### Inverted Index
 
 #### Inverted Index with BM25 Algorithm
