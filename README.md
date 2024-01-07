@@ -31,6 +31,14 @@ and m = |E| = |{(v1, v2), (v2, v3), (v3, v4), ..., (v9, v10)| = 9.
       <td>&#920;($\ n^2$)</td>
     </tr>
     <tr>
+      <td>get_adjacency_list</td>
+      <td>&#920;(1)</td>
+    </tr>
+    <tr>
+      <td>get_adjacency_matrix</td>
+      <td>&#920;(1)</td>
+    </tr>
+    <tr>
       <td>edge_in_edges(edge)</td>
       <td>&#927;(m)</td>
     </tr>
@@ -48,7 +56,15 @@ and m = |E| = |{(v1, v2), (v2, v3), (v3, v4), ..., (v9, v10)| = 9.
     </tr>
     <tr>
       <td>get_in_degree(vertex)</td>
-      <td>&#920;(1)</td>
+      <td>&#920;(m)</td>
+    </tr>
+    <tr>
+      <td>get_adjacency_list_as_string</td>
+      <td>&#920;(m + n)</td>
+    </tr>
+    <tr>
+      <td>get_adjacency_matrix_as_string</td>
+      <td>&#920;($n^{2}$)</td>
     </tr>
     <tr>
       <td>print</td>

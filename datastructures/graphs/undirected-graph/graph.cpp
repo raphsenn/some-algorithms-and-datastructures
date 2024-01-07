@@ -42,12 +42,19 @@ void Graph::create_adjacency_matrix() {
   }
 }
 
+std::unordered_map<int, std::vector<int>> get_adjacency_list() { return adjacency_list; }
 
 std::vector<int> Graph::get_vertices(){ return vertices; }
 
 std::vector<std::tuple<int, int>> Graph::get_edges(){ return edges; }
 
-int Graph::in_degree(int vertex) { return 0; }
+int Graph::in_degree(int vertex) {
+  int degree = 0; 
+  for (int i = 0; i < edges.size(); i++) {
+    if (std::get<1>(edges[i]) == vertex) {degree++;}
+  }
+  return degree;
+}
 
 int Graph::out_degree(int vertex) { return adjacency_list[vertex].size(); }
 
