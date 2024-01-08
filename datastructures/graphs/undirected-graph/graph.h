@@ -16,7 +16,6 @@
 //////////////////////////////////////////////////////////////////////////////
 #include <vector>
 #include <map>
-#include <unordered_map>
 #include <any>
 #include <tuple>
 #include <cstdio>
@@ -29,7 +28,7 @@ class Graph {
   private:
     std::vector<int> vertices;
     std::vector<std::tuple<int, int>> edges;
-    std::unordered_map<int, std::vector<int>> adjacency_list;
+    std::map<int, std::vector<int>> adjacency_list;
     std::vector<std::vector<int>> adjacency_matrix;
 
   public:
@@ -61,11 +60,17 @@ class Graph {
     int out_degree(int vertex);
 
     // Returns the adjacency list.
-    std::unordered_map<int, std::vector<int>> get_adjacency_list();
+    std::map<int, std::vector<int>> get_adjacency_list();
    
     // Returns the adjacency matrix.
     std::vector<std::vector<int>> get_adjacency_matrix();
-  
+    
+    // Returns adjacency matrix as string. 
+    std::string get_adjacency_list_as_string();
+   
+    // Returns adjacency matrix as string. 
+    std::string get_adjacency_matrix_as_string();
+
     // Print graph as adjacency list.
     void print();
 };

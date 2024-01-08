@@ -42,7 +42,7 @@ void Graph::create_adjacency_matrix() {
   }
 }
 
-std::unordered_map<int, std::vector<int>> get_adjacency_list() { return adjacency_list; }
+std::map<int, std::vector<int>> Graph::get_adjacency_list() { return adjacency_list; }
 
 std::vector<int> Graph::get_vertices(){ return vertices; }
 
@@ -57,6 +57,24 @@ int Graph::in_degree(int vertex) {
 }
 
 int Graph::out_degree(int vertex) { return adjacency_list[vertex].size(); }
+
+std::string Graph::get_adjacency_list_as_string() {
+  std::string adjacency_list_as_string = "{"; 
+  for (auto it = adjacency_list.begin(); it != adjacency_list.end(); ++it) {
+    adjacency_list_as_string += std::to_string(it->first) + ": [";
+    for (int j = 0; j < it->second.size(); j++) {
+      if (j != it->second.size()-1) {
+        adjacency_list_as_string += std::to_string(it->second[j]) + ", ";
+      } else { adjacency_list_as_string += std::to_string(it->second[j]); }
+    }
+    adjacency_list_as_string += "]";
+    if (std::next(it) != adjacency_list.end()) {
+      adjacency_list_as_string += ", ";
+    }
+  }
+  adjacency_list_as_string += "}";
+  return adjacency_list_as_string;
+}
 
 void Graph::print() {
   printf("{"); 
